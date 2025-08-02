@@ -312,6 +312,7 @@ PRODUCT_PACKAGES += \
     FrameworksResCommon \
     FrameworksResGeneric \
     FrameworksResTarget \
+    NcmTetheringOverlay \
     OPlusFrameworksResCommon \
     OPlusFrameworksResTarget \
     OPlusSettingsProviderResTarget \
