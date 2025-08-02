@@ -51,6 +51,9 @@ TARGET_PROVIDES_AUDIO_EXTNS := true
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := lito
 
+# Display
+TARGET_GRALLOC_HANDLE_HAS_RESERVED_SIZE := true
+
 # Camera
 TARGET_CAMERA_PACKAGE_NAME := com.oneplus.camera
 
