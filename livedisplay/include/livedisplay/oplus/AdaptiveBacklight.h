@@ -1,22 +1,22 @@
 /*
- * SPDX-FileCopyrightText: 2021-2025 The LineageOS Project
+ * SPDX-FileCopyrightText: 2025 The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0
  */
 
 #pragma once
 
-#include <aidl/vendor/lineage/livedisplay/BnAntiFlicker.h>
+#include <aidl/vendor/lineage/livedisplay/BnAdaptiveBacklight.h>
 
 namespace aidl {
 namespace vendor {
 namespace lineage {
 namespace livedisplay {
 
-class AntiFlicker : public BnAntiFlicker {
+class AdaptiveBacklight : public BnAdaptiveBacklight {
   public:
-    AntiFlicker();
+    AdaptiveBacklight();
 
-    // Methods from ::aidl::vendor::lineage::livedisplay::BnAntiFlicker follow.
+    // Methods from ::aidl::vendor::lineage::livedisplay::BnAdaptiveBacklight follow.
     ndk::ScopedAStatus getEnabled(bool* _aidl_return) override;
     ndk::ScopedAStatus setEnabled(bool enabled) override;
 

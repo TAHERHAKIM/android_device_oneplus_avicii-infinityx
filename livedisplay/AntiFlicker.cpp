@@ -1,44 +1,47 @@
 /*
- * Copyright (C) 2022 The LineageOS Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-FileCopyrightText: 2022-2025 The LineageOS Project
+ * SPDX-License-Identifier: Apache-2.0
  */
 
+#define LOG_TAG "AntiFlickerService"
+
+#include <android-base/logging.h>
 #include <fcntl.h>
 #include <livedisplay/oplus/AntiFlicker.h>
 #include <oplus/oplus_display_panel.h>
 
+namespace aidl {
 namespace vendor {
 namespace lineage {
 namespace livedisplay {
-namespace V2_1 {
-namespace implementation {
 
 AntiFlicker::AntiFlicker() : mOplusDisplayFd(open("/dev/oplus_display", O_RDWR)) {}
 
-Return<bool> AntiFlicker::isEnabled() {
+ndk::ScopedAStatus AntiFlicker::getEnabled(bool* _aidl_return) {
     unsigned int value;
-    return ioctl(mOplusDisplayFd, PANEL_IOCTL_GET_DIMLAYER_BL_EN, &value) == 0 && value > 0;
+    if (ioctl(mOplusDisplayFd, PANEL_IOCTL_GET_DIMLAYER_BL_EN, &value) != 0) {
+        LOG(ERROR) << "Failed to read current AntiFlicker state";
+        return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+    }
+    *_aidl_return = value > 0;
+    return ndk::ScopedAStatus::ok();
 }
 
-Return<bool> AntiFlicker::setEnabled(bool enabled) {
+ndk::ScopedAStatus AntiFlicker::setEnabled(bool enabled) {
+    bool isEnabled;
+    if (auto status = getEnabled(&isEnabled); !status.isOk()) {
+        return status;
+    }
     unsigned int value = enabled;
-    return isEnabled() == enabled ||
-           ioctl(mOplusDisplayFd, PANEL_IOCTL_SET_DIMLAYER_BL_EN, &value) == 0;
+    if (isEnabled != enabled &&
+        ioctl(mOplusDisplayFd, PANEL_IOCTL_SET_DIMLAYER_BL_EN, &value) != 0) {
+        LOG(ERROR) << "Failed to set AntiFlicker state";
+        return ndk::ScopedAStatus::fromExceptionCode(EX_UNSUPPORTED_OPERATION);
+    }
+    return ndk::ScopedAStatus::ok();
 }
 
-}  // namespace implementation
-}  // namespace V2_1
 }  // namespace livedisplay
 }  // namespace lineage
 }  // namespace vendor
+}  // namespace aidl
